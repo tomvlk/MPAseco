@@ -1,0 +1,6 @@
+### IntelliJ Idea Files
+*.iml
+.idea
+
+### Max OSX
+.DS_Store
