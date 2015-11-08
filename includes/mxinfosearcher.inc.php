@@ -190,40 +190,42 @@ class MXInfoSearcher implements Iterator,Countable {
 		return $maps;
 	}  // getList
 
-	// Simple HTTP Get function with timeout
-	// ok: return string || error: return false || timeout: return -1
+	/**
+	 * @param $url string URL to get
+	 * @return bool|string False on error or string with content on success
+	 */
 	private function get_file($url) {
+		// Prepare headers
+		$headers = array(
+				'http' => array(
+						'method'            => 'GET',
+						'timeout'           => 2,
+						'user_agent'        => 'MPASECO-' . MPASECO_VERSION . ' HTTPSFIX (' . PHP_OS . '; ' . $this->prefix . ')',
+						'follow_location'   => true,
+						'header'            => 'Content-Type: application/json'
+				)
+		);
 
-		$url = parse_url($url);
-		$port = isset($url['port']) ? $url['port'] : 80;
-		$query = isset($url['query']) ? "?" . $url['query'] : "";
+		// Prepare context
+		$context = stream_context_create($headers);
 
-		$fp = @fsockopen($url['host'], $port, $errno, $errstr, 4);
-		if (!$fp)
+		// Execute and return
+		$data = file_get_contents($url, false, $context);
+
+
+		if ($data === false) {
 			return false;
-
-		fwrite($fp, 'GET ' . $url['path'] . $query . " HTTP/1.0\r\n" .
-		            'Host: ' . $url['host'] . "\r\n" .
-		            'Content-Type: application/json' . "\r\n" .
-		            'User-Agent: MXInfoSearcher (' . PHP_OS . ")\r\n\r\n");
-		stream_set_timeout($fp, 2);
-		$res = '';
-		$info['timed_out'] = false;
-		while (!feof($fp) && !$info['timed_out']) {
-			$res .= fread($fp, 512);
-			$info = stream_get_meta_data($fp);
 		}
-		fclose($fp);
 
-		if ($info['timed_out']) {
-			return -1;
-		} else {
-			if (substr($res, 9, 3) != '200')
-				return false;
-			$page = explode("\r\n\r\n", $res, 2);
-			return trim($page[1]);
+		// Check for http status code
+		if (!isset($http_response_header[0]) || !stristr($http_response_header[0], '200 OK')) {
+			return false;
 		}
+
+
+		return $data;
 	}  // get_file
+	
 }  // class MXInfoSearcher
 
 
