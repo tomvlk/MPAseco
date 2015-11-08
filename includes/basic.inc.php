@@ -690,44 +690,29 @@ function findMXdata($uid, $records = false) {
 function http_get_file($url, $openonly = false) {
 	global $aseco;
 
-	$url = parse_url($url);
-	$port = isset($url['port']) ? $url['port'] : 80;
-	$query = isset($url['query']) ? '?' . $url['query'] : '';
+	// Make headers
+	$headers = array(
+			'http' => array(
+					'method'            => 'GET',
+					'timeout'           => 2,
+					'user_agent'        => 'MPASECO-' . MPASECO_VERSION . ' HTTPSFIX (' . PHP_OS . '; ' . $aseco->server->game . ')',
+					'follow_location'   => true,
+					'header'            => 'X-ManiaPlanet-ServerLogin: ' . $aseco->server->serverlogin
+			)
+	);
 
-	$fp = @fsockopen($url['host'], $port, $errno, $errstr, 4);
-	if (!$fp)
-		return false;
+	// Prepare context
+	$context = stream_context_create($headers);
+
+	// Execute and return
+	$data = file_get_contents($url, false, $context);
+
+
 	if ($openonly) {
-		fclose($fp);
-		return true;
+		return !$data;
 	}
 
-	$uri = '';
-	foreach (explode('/', $url['path']) as $subpath)
-		$uri .= rawurlencode($subpath) . '/';
-	$uri = substr($uri, 0, strlen($uri)-1); // strip trailing '/'
-
-	fwrite($fp, 'GET ' . $uri . $query . " HTTP/1.0\r\n" .
-	            'Host: ' . $url['host'] . "\r\n" .
-	            'User-Agent: MPASECO-' . MPASECO_VERSION . ' (' . PHP_OS . '; ' .
-	                         $aseco->server->game . ")\r\n\r\n");
-	stream_set_timeout($fp, 2);
-	$res = '';
-	$info['timed_out'] = false;
-	while (!feof($fp) && !$info['timed_out']) {
-		$res .= fread($fp, 512);
-		$info = stream_get_meta_data($fp);
-	}
-	fclose($fp);
-
-	if ($info['timed_out']) {
-		return -1;
-	} else {
-		if (substr($res, 9, 3) != '200')
-			return false;
-		$page = explode("\r\n\r\n", $res, 2);
-		return $page[1];
-	}
+	return $data;
 }  // http_get_file
 
 /**
