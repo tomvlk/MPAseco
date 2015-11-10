@@ -274,6 +274,8 @@ class MXInfoFetcher {
 	 * @return bool|string False on error or string with content on success
 	 */
 	private function get_file($url) {
+		$url = str_replace(' ', '%20',$url);
+
 		// Prepare headers
 		$headers = array(
 				'http' => array(
@@ -297,7 +299,7 @@ class MXInfoFetcher {
 		}
 
 		// Check for http status code
-		if (!isset($http_response_header[0]) || !stristr($http_response_header[0], '200 OK')) {
+		if (!in_array('HTTP/1.1 200 OK', $http_response_header) && !in_array('HTTP/1.0 200 OK', $http_response_header)) {
 			return false;
 		}
 

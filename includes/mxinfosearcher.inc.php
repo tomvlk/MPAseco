@@ -195,6 +195,8 @@ class MXInfoSearcher implements Iterator,Countable {
 	 * @return bool|string False on error or string with content on success
 	 */
 	private function get_file($url) {
+		$url = str_replace(' ', '%20',$url);
+
 		// Prepare headers
 		$headers = array(
 				'http' => array(
@@ -218,14 +220,14 @@ class MXInfoSearcher implements Iterator,Countable {
 		}
 
 		// Check for http status code
-		if (!isset($http_response_header[0]) || !stristr($http_response_header[0], '200 OK')) {
+		if (!in_array('HTTP/1.1 200 OK', $http_response_header) && !in_array('HTTP/1.0 200 OK', $http_response_header)) {
 			return false;
 		}
 
 
 		return $data;
 	}  // get_file
-	
+
 }  // class MXInfoSearcher
 
 
@@ -265,9 +267,9 @@ class MXInfo {
       if($this->prefix == 'tm' || !property_exists($mx, "MapID"))
         $this->id = $mx->TrackID;
       else
-        $this->id = $mx->MapID;  
+        $this->id = $mx->MapID;
 		//	$this->id        = ($this->prefix == 'tm') ? $mx->TrackID : $mx->MapID;
-		
+
 			$this->name      = $mx->Name;
 			$this->userid    = $mx->UserID;
 			$this->author    = $mx->Username;
