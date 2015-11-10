@@ -707,9 +707,8 @@ function http_get_file($url, $openonly = false) {
 	// Execute and return
 	$data = file_get_contents($url, false, $context);
 
-
 	if ($openonly) {
-		return !$data;
+		return !empty($data);
 	}
 
 	return $data;
