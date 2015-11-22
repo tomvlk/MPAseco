@@ -141,7 +141,7 @@ class MXInfoFetcher {
 			$dir = 'tracks';
 		else // 'sm' || 'qm'
 			$dir = 'maps';
-		$url = 'http://api.mania-exchange.com/' . $this->prefix . '/' . $dir . '/' . ($isuid ? $this->uid : $this->id);
+		$url = 'https://api.mania-exchange.com/' . $this->prefix . '/' . $dir . '/' . ($isuid ? $this->uid : $this->id);
 		$file = $this->get_file($url);
 		if ($file === false) {
 			$this->error = 'Connection or response error on ' . $url;
@@ -212,13 +212,13 @@ class MXInfoFetcher {
 		$this->acomment  = str_ireplace($search, $replace, $this->acomment);
 		$this->acomment  = preg_replace('/\[url=.*\]/', '<i>', $this->acomment);
 
-		$this->pageurl   = 'http://' . $this->prefix . '.mania-exchange.com/' . $dir . '/view/' . $this->id;
-		$this->imageurl  = 'http://' . $this->prefix . '.mania-exchange.com/' . $dir . '/screenshot/normal/' . $this->id;
-		$this->thumburl  = 'http://' . $this->prefix . '.mania-exchange.com/' . $dir . '/screenshot/small/' . $this->id;
-		$this->dloadurl  = 'http://' . $this->prefix . '.mania-exchange.com/' . $dir . '/download/' . $this->id;
+		$this->pageurl   = 'https://' . $this->prefix . '.mania-exchange.com/' . $dir . '/view/' . $this->id;
+		$this->imageurl  = 'https://' . $this->prefix . '.mania-exchange.com/' . $dir . '/screenshot/normal/' . $this->id;
+		$this->thumburl  = 'https://' . $this->prefix . '.mania-exchange.com/' . $dir . '/screenshot/small/' . $this->id;
+		$this->dloadurl  = 'https://' . $this->prefix . '.mania-exchange.com/' . $dir . '/download/' . $this->id;
 
 		if ($this->replayid > 0) {
-			$this->replayurl = 'http://' . $this->prefix . '.mania-exchange.com/replays/download/' . $this->replayid;
+			$this->replayurl = 'https://' . $this->prefix . '.mania-exchange.com/replays/download/' . $this->replayid;
 		} else {
 			$this->replayurl = '';
 		}
@@ -227,7 +227,7 @@ class MXInfoFetcher {
 		$this->recordlist = array();
 		if ($this->prefix == 'tm' && $this->records) {
 			$limit = 15;
-			$url = 'http://api.mania-exchange.com/' . $this->prefix . '/replays/' . $this->id . '/' . $limit . '/';
+			$url = 'https://api.mania-exchange.com/' . $this->prefix . '/replays/' . $this->id . '/' . $limit . '/';
 			$file = $this->get_file($url);
 			if ($file === false) {
 				$this->error = 'Connection or response error on ' . $url;
@@ -261,7 +261,7 @@ class MXInfoFetcher {
 				                          'percentage' => $mx[$i]->Percentage,
 				                          'replaypnts' => $mx[$i]->ReplayPoints,
 				                          'nadeopnts'  => $mx[$i]->NadeoPoints,
-				                          'replayurl'  => 'http://' . $this->prefix . '.mania-exchange.com/replays/download/' . $mx[$i]->ReplayID,
+				                          'replayurl'  => 'https://' . $this->prefix . '.mania-exchange.com/replays/download/' . $mx[$i]->ReplayID,
 				                        );
 				$i++;
 			}
